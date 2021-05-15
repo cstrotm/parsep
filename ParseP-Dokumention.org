@@ -1,0 +1,287 @@
+
+Parse Plus V.075: Ein Programm zum script-gesteuerten Bearbeiten von
+Text-Dateien unter MS-DOS. Dieses Programm entstand im Laufe von
+Kunden-Projekten in den Jahren 1995-1999, in denen Text-Dateien
+automatisiert angepasst werden mussten, meist bei der
+unbeaufsichtigten Installation von DOS, OS/2 und Windows NT Systemen.
+
+Das Programm ist in Turbo Pascal geschrieben und weist in der
+vorherigen Version (0.74 von 1997) einen Fehler im CRT-Runtimemodul
+von Turbo Pascal auf. Dieser Fehler erzeugt auf auf Rechner mit mehr
+als 200 Mhz einen Runtime Error 200. In der neuen Version wurde dieser
+Runtime Fehler behoben.
+
+* Parse+ Anleitung
+
+** Was ist Parse+:
+
+Parse+ ist ein kleines Text-Modus Programm zur Manipulation von
+(ASCII)-Text-Dateien. Mit Parse+ können Sie in Text-Dateien
+Zeichenketten ersetzen, löschen und hinzufügen.
+
+Parse+ wurde erstellt um Text-Dateien (=AUTOEXEC.BAT=, =SYSTEM.INI=
+usw.) in automatisierten Installations-Routinen zu ändern. Sicherlich
+gibt es aber vielfältige Möglichkeiten, dieses kleine Programm
+einzusetzen.
+
+** Die Benutzung:
+
+Parse+ wird mit folgendem Befehl aufgerufen:
+
+#+begin_example
+   PARSEP cmd:txt1 [txt2] file.ext [/T] [/Q] [/!B] [/DEBUG]
+#+end_example
+
+oder
+
+#+begin_example
+   PARSEP file.ext
+#+end_example
+
+ACHTUNG: Beachten Sie bei den Parametern Gross- Kleinschreibung
+
+** Die Schalter:
+
+*** [/T] -- Standard Textmodus
+
+Normalerweise zeigt Parse+ die Bildschirm-Ausgaben in
+Bildschirm-Fenstern an. Mit diesem Befehl wird die Ausgabe in normaler
+Text-Form auf die Standard-Ausgabe geschrieben. Diese Ausgabe lässt
+sich umleiten, z. B. in eine Datei (für Log-Dateien) oder auf einen
+Drucker.
+
+Beispiel:
+
+#+begin_example
+  PARSEP REP:DEVICE DEVICEHIGH C:\CONFIG.SYS /T > log.txt
+#+end_example
+
+*** [/Q] -- Quietmodus, stiller Modus
+
+in diesem Modus gibt Parse+ keine Meldungen auf dem Bildschirm aus.
+Ausgenommen sind Benutzer-Eingaben.
+
+*** [/!B] -- kein Backup
+
+Parse+ legt zu jeder bearbeiteten Datei ein Backup der Original-Datei
+an. Diese Datei wird mit einem fortlaufenden Datei-Externder versehen,
+also z. B. =CONFIG.000=, =CONFIG.001= ... . Von einer Datei können
+theoretisch 999 Backup-Dateien entstehen. Kann Parse+ keine
+Backup-Dateien anlegen, wird das Programm mit einer Fehlermeldung
+verlassen. (Errorlevel = 8). Der Schalter /!B bewirkt das keine
+Backup-Datei angelegt wird.
+
+*** [/DEBUG] -- Debug Modus
+
+im Debug Modus wartet das Programm nach jeder ausgeführten Aktion auf
+einen Tastendruck. Besonders bei Problemen mit dem Hauptspeicher, kann
+man im Debug-Modus die Menge des verfügbaren Hauptspeichers mit
+Memory-Fenster (oben rechts) ablesen. Fehlender Hauptspeicher bewirkt
+eine Fehlermeldung (Errorlevel = 1).
+
+** Die Kommandos:
+
+*** Replace (REP) = Ersetzen
+
+Das Replace Kommando dient zum Ersetzen von Text. Der Text in
+Parameter 1 wird gegen den Text in Parameter 2 ausgetauscht. Alle
+Textstellen werden getauscht.
+
+Beispiel:
+
+#+begin_example
+   PARSEP REP:MOUSE.COM MOUSE.EXE C:\AUTOEXEC.BAT
+#+end_example
+
+= in der Datei =C:\AUTOEXEC.BAT= wird der Text =MOUSE.COM= gegen
+=MOUSE.EXE= ersetzt.
+
+Wichtig: Enthalten die Parameter Leerzeichen, so müssen die Parameter
+in doppelte Hochkomma eingeschlossen werden, also
+
+#+begin_example
+  PARSEP REP:"LH MOUSE.COM" "LOADHIGH MOUSE.EXE" C:\AUTOEXEC.BAT
+#+end_example
+
+*** Replace Word (REW) = Wort ersetzen
+
+dieses Kommando arbeitet wie das Replace Kommando, allerdings werden
+nur ganze Wörter (durch Leerzeichen getrennt) ersetzt.
+
+Beispiel:
+
+#+begin_example
+  PARSEP REW:viel oft C:\TEXT.TXT
+#+end_example
+
+ändert "ich singe viel" in "ich singe oft", aber nicht
+"vielversprechend" in "oftversprechend"!
+
+*** Replace once (REO) = nur einmal ersetzen
+
+wie Replace, aber der gesuchte Text wird nur an der ersten Fundstelle
+ersetzt.
+
+Beispiel:
+
+#+begin_example
+  PARSEP REO:viel oft C:\TEXT.TXT
+#+end_example
+
+*** Delete (DEL) = Löschen
+
+das Kommando Delete löscht den in Parameter 1 angegebenen Text.
+
+Beispiel:
+
+#+begin_example
+  PARSEP DEL:DEVICE= C:\AUTOEXEC.BAT
+#+end_example
+
+löscht alle =DEVICE== Textstellen (und nicht in die =AUTOEXEC.BAT=
+gehören).
+
+*** Delete Word (DEW) = Wort löschen
+
+wie Delete, es werden jedoch nur Wörter gelöscht.
+
+*** Delete once (DEO) = nur einmal löschen
+
+löscht den gefunden Text nur am ersten Vorkommen.
+
+*** Delete Line (DLL) = Zeile löschen
+
+Delete Line löscht die Zeile, in welcher der Text in Parameter 1
+vorkommt.
+
+Beispiel:
+
+#+begin_example
+  PARSEP DLL:.EXE C:\CONFIG.SYS
+#+end_example
+
+löscht alle Zeilen, in denen =.EXE= vorkommt aus der =CONFIG.SYS=
+
+*** Delete Line Word (DLW) = Löscht Zeile, in der Wort vorkommt
+
+wie Delete Line, es werden jedoch nur Zeilen gelöscht, in denen
+Parameter 1 als Wort vorkommt.
+
+*** Delete Line once (DLO) = Löscht Zeile nur einmal
+
+wie Delete Line, es werden jedoch nur die erste Zeile gelöscht, in
+welcher der Text in Parameter 1 vorkommt.
+
+*** Insert Line (ISL) = Zeile einfügen
+
+Dieses Kommando fügt den Text in Parameter 2 als neue Zeile nach der
+Zeile ein, in welcher der Text aus Parameter 1 gefunden wurde.
+
+Beispiel:
+
+#+begin_example
+  PARSEP ISL:MOUSE.COM PAUSE C:\AUTOEXEC.BAT
+#+end_example
+
+fügt eine Zeile mit Pause-Befehl hinter der Zeile mit =MOUSE.COM= ein.
+
+*** Input Line (INL) = Zeile Eingeben
+
+Dieses Kommando bringt eine Eingabe-Zeile. Der Benutzer kann nun einen
+Text eingeben. Der Text in Parameter 1 wird gegen den eingegebenen Text
+ersetzt. Der in Parameter 2 angegebene Text wird als Überschrift über
+der Eingabe-Zeile erscheinen.
+
+Beispiel:
+
+#+begin_example
+  PARSEP INP:Hamburg "In welche Stadt möchten Sie Reisen?" REISE.TXT
+#+end_example
+
+Es erscheint eine Eingabe-Zeile. Der Benutzer tippt Frankfurt. Nun
+werden alle Textstellen in =REISE.TXT=, in denen Hamburg steht, in
+Frankfurt umgewandelt.
+
+*** Input List (INL) = Eingabeliste
+
+Dieses Kommando ermöglicht es dem Benutzer aus eine Liste eine Auswahl
+zu treffen.
+
+Beispiel:
+
+#+begin_example
+  PARSEP INL:Hamburg "Wohin Reisen Sie?;Berlin;Frankfurt;München;" REISE.TXT
+#+end_example
+
+Die Liste besteht aus Texten durch Semikolon getrennt (;). Das erste
+Listen-Element wird als Überschrift über die Auswahl-Box erscheinen. Aus
+den restlichen Elementen kann der Benutzer auswählen. Wichtig: Es
+müssen mindestens zwei Auswahl-Punkte angegeben werden!
+
+*** Input Passwort (IPP) = Passworteingabe
+
+Dieses Kommando arbeitet wie Input Line, jedoch wird der eingegebene
+Text nicht sichtbar am Bildschirm angezeigt. Zusätzlich wird die
+Eingabe durch eine weitere Sicherheits-Eingabe überprüft.
+
+Beispiel:
+
+#+begin_example
+  PARSEP IPP:Password "Bitte geben Sie Ihr Passwort ein" C:\CONFIG.SYS
+#+end_example
+
+*** Input IP-Adress (IPI) = IP-Adressen Eingabe
+
+wie Input Line, aber mit einer Eingabemaske für IPv4-Adressen
+=[000.000.000.000]=.
+
+*** File load (FIL) = (Text)-Datei laden
+
+dieses Kommando lädt eine neue Datei in den Text=Buffer. Dieser Befehl
+dient zum Automatisieren von mehreren Befehlen auf einer oder mehreren
+Text-Dateien. Man erstellt eine Kommando-Datei, z. B. =CMD.TXT= mit
+folgendem Inhalt:
+
+#+begin_example
+   FIL:C:\CONFIG.SYS
+   REP:DEVICE DEVICEHIGH
+   REW:MOUSE.COM MOUSE.SYS
+
+   FIL:C:\AUTOEXEC.BAT
+   DLL:REM
+#+end_example
+
+Aufgerufen wird diese Befehlsfolge nun mittels =PARSEP CMD.TXT=. Es
+werden alle PARSEP Kommandos in der =CMD.TXT= Datei abgearbeitet.
+
+*** Commandofile load (CMD) = (Kommando)-Datei laden
+
+Dieses Kommando liest eine neue Kommando-Datei in das Programm. Die
+alte Kommando-Datei wird aus dem Speicher entfernt, weitere Kommandos
+dieser Datei nicht abgearbeitet. Mit diesem Kommando können
+Kommando-Dateien verkettet werden.
+
+Beispiel: (Datei = CMD.1)
+
+#+begin_example
+   REM:Kommando Datei 1
+   FIL:CONFIG.SYS
+   REP:DEVICE LOAD
+   CMD:CMD.2
+#+end_example
+
+Beispiel: (Datei = CMD.2)
+
+#+begin_example
+   REM:Kommando Datei 2
+   FIL:AUTOEXEC.BAT
+   REP:LH LOADHIGH
+#+end_example
+
+Achtung: Rekursive Aufrufe können den Rechner lahm legen!!! Also kein
+CMD.1 ruft CMD.2 ruft CMD.1 usw...
+
+*** Remark (REM) = Kommentar
+
+Dieses Kommando bewirkt das der als Parameter 1 angegebene Text
+ausgegeben wird.
