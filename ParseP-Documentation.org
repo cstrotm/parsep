@@ -1,0 +1,269 @@
+* Parse+ Tutorial
+
+** What is Parse+:
+
+Parse+ is a small text-mode program for manipulating (ASCII) text
+files. With Parse+ you can replace, delete and add strings in text
+files.
+
+Parse+ was created to manipulate text files (=AUTOEXEC.BAT=,
+=SYSTEM.INI= etc.) in automated installation routines. Certainly there
+are many possibilities to use this small program. to use.
+
+** Usage:
+
+Parse+ is invoked with the following command:
+
+#+begin_example
+   PARSEP cmd:txt1 [txt2] file.ext [/T] [/Q] [/!B] [/DEBUG]
+#+end_example
+
+or
+
+#+begin_example
+   PARSEP file.ext
+#+end_example
+
+ATTENTION: Note that the parameters are case sensitive.
+
+** The switches:
+
+*** [/T] -- default text mode
+
+Normally Parse+ displays the screen output in screen windows. With
+this command, the output is written in normal text form to the standard
+output. This output can be redirected, e.g. to a file (for log files)
+or to a printer.
+
+Example:
+
+#+begin_example
+  PARSEP REP:DEVICE DEVICEHIGH C:\CONFIG.SYS /T > log.txt
+#+end_example
+
+*** [/Q] -- silent mode
+
+in this mode Parse+ does not output any messages on the screen except
+for User input.
+
+*** [/!B] -- no backup
+
+Parse+ creates a backup of the original file for each edited file. The
+backup files are provided with a continuous file extender, e.g.
+=CONFIG.000=, =CONFIG.001= ... . This can create up to 999 backup
+files. If Parse+ cannot create backup files, the program exits with
+an error message (Errorlevel = 8). The switch /!B disables the creation of backup files.
+
+*** [/DEBUG] -- Debug mode
+
+In debug mode the program waits for a keystroke after each executed
+command. Especially with problems with the low memory conditions under
+DOS, you can you can check the amount of available main memory in the
+debug mode with the Memory window (top right). Low main memory causes
+an error message (Errorlevel = 1).
+
+** The commands:
+
+*** Replace (REP) = Replace
+
+The Replace command is used to replace text. The text in parameter 1
+is replaced by the text in parameter 2. All text passages are
+exchanged.
+
+Example:
+
+#+begin_example
+   PARSEP REP:MOUSE.COM MOUSE.EXE C:\AUTOEXEC.BAT
+#+end_example
+
+= in the file =C:\AUTOEXEC.BAT= the text =MOUSE.COM= is exchanged for
+=MOUSE.EXE=.
+
+Important: If the parameters contain spaces, the parameters must be
+must be enclosed in double quotes, i.e.
+
+#+begin_example
+  PARSEP REP: "LH MOUSE.COM" "LOADHIGH MOUSE.EXE" C:\AUTOEXEC.BAT
+#+end_example
+
+*** Replace Word (REW) = replace word
+
+This command works like the Replace command, but only whole words
+(separated by spaces) are replaced.
+
+Example:
+
+#+begin_example
+  PARSEP REW:"a lot" "often" C:\TEXT.TXT
+#+end_example
+
+changes "I sing a lot" to "I sing often", but does not change
+"promising a lot" to "promising often"!
+
+*** Replace once (REO) = replace only once
+
+like Replace, but the searched text is replaced only at the first
+occurrence.
+
+Example:
+
+#+begin_example
+  PARSEP REO:many times C:\TEXT.TXT
+#+end_example
+
+*** Delete (DEL) = delete
+
+the Delete command deletes the text specified in parameter 1.
+
+Example:
+
+#+begin_example
+  PARSEP DEL:DEVICE= C:\AUTOEXEC.BAT
+#+end_example
+
+deletes all =DEVICE== text parts (which normally do not belong into
+the =AUTOEXEC.BAT= file).
+
+*** Delete Word (DEW) = delete word
+
+like Delete, but only words are deleted.
+
+*** Delete once (DEO) = delete only once
+
+deletes the found text only at the first occurrence.
+
+*** Delete Line (DLL) = delete line
+
+Delete Line deletes the line in which the text occurs in parameter 1
+occurs.
+
+Example:
+
+#+begin_example
+  PARSEP DLL:.EXE C:\CONFIG.SYS
+#+end_example
+
+deletes all lines containing =.EXE= from =CONFIG.SYS=.
+
+*** Delete Line Word (DLW) = Deletes line, in which word occurs
+
+like Delete Line, but only lines are deleted, in which parameter 1
+occurs as word.
+
+*** Delete Line once (DLO) = Deletes line only once
+
+like Delete Line, but only the first line in which the text in
+parameter 1 occurs.
+
+*** Insert Line (ISL) = Insert line
+
+This command inserts the text in parameter 2 as a new line after the
+line in which the text from parameter 1 was found.
+
+Example:
+
+#+begin_example
+  PARSEP ISL:MOUSE.COM PAUSE C:\AUTOEXEC.BAT
+#+end_example
+
+inserts a line with the =pause= command after the line with
+=MOUSE.COM=.
+
+*** Input Line (INL) = Input line
+
+This command displays an input line. The user can now enter a text.
+The text in parameter 1 will be replaced by the entered text. The text
+specified in parameter 2 will appear as a prompt above the input line.
+
+Example:
+
+#+begin_example
+  PARSEP INP:London "To which city would you like to travel?" TRAVEL.TXT
+#+end_example
+
+An input line appears. The user types Frankfurt. Now all text passages
+in =TRAVEL.TXT= containing the word London will be replaced by the
+word Frankfurt.
+
+*** Input List (INL) = Input list
+
+This command allows the user to make a selection from a list.
+
+Example:
+
+#+begin_example
+  PARSEP INL:Hamburg "Where are you traveling to?;Berlin;Frankfurt;Munich;" TRAVEL.TXT
+#+end_example
+
+The list consists of text separated by semicolons (;). The first list
+element will appear as a prompt over the selection box. The user can
+select from the remaining elements. Important: At least two selection
+items must be specified!
+
+*** Input Password (IPP) = Password input
+
+This command works like Input Line, but the entered text is not
+visibly echoed on the screen. Additionally the input is checked by
+another input.
+
+Example:
+
+#+begin_example
+  PARSEP IPP:%Password% "Please enter your password" C:\CONFIG.SYS
+#+end_example
+
+*** Input IP address (IPI) = IP address input
+
+like Input Line, but with an input mask for IPv4 addresses
+=[000.000.000.000]=.
+
+*** File load (FIL) = (text) file load
+
+This command loads a new file into the text-buffer. This command
+is used to automate several commands on one or more text files.
+
+Example command file, e.g. =CMD.TXT= with the following content:
+
+#+begin_example
+   FIL:C:\CONFIG.SYS
+   REP:DEVICE DEVICEHIGH
+   REW:MOUSE.COM MOUSE.SYS
+
+   FIL:C:\AUTOEXEC.BAT
+   DLL:REM
+#+end_example
+
+This command sequence is now called using =PARSEP CMD.TXT=. All PARSEP
+commands after the =FIL= command are executed on the selected file
+until the next =FIL= command or the end of the command file.
+
+*** Commandofile load (CMD) = Load (command) file
+
+This command reads a new command file into Parse+. The old command
+file is discarded from the memory, further commands of this file are
+not processed. With this command multiple command files can be
+concatenated.
+
+Example: (file = CMD.1)
+
+#+begin_example
+   REM:Command file 1
+   FIL:CONFIG.SYS
+   REP:DEVICE LOAD
+   CMD:CMD.2
+#+end_example
+
+Example: (file = CMD.2)
+
+#+begin_example
+   REM:Command file 2
+   FIL:AUTOEXEC.BAT
+   REP:LH LOADHIGH
+#+end_example
+
+Attention: Recursive calls can bring the computer to hold!!! So no
+CMD.1 calls CMD.2 calls CMD.1 etc...
+
+*** Remark (REM) = Comment
+
+This command causes that the text specified as parameter 1 is printed.

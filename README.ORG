@@ -1,0 +1,7 @@
+* Parse Plus
+
+A program for script-controlled editing of text files
+under MS-DOS. This program was developed in the course of customer
+projects in the years 1995-1999, in which text files had to be adapted
+automatically, mostly during the unattended installation of DOS, OS/2
+and Windows NT systems.
